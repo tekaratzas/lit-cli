@@ -1,6 +1,11 @@
+import { IssuePayload, LinearClient } from '@linear/sdk';
+import OpenAI from 'openai';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import type { Config } from '../utils/config.js';
+import getCurrentUserContext from '../utils/LinearUserContext.js';
+import { generateBranchName } from '../utils/branchName.js';
+import { createAndCheckoutBranch, GitError } from '../utils/git.js';
 
 export function checkoutCommand(program: Command, config: Config) {
   program
@@ -16,16 +21,105 @@ export function checkoutCommand(program: Command, config: Config) {
       }
 
       try {
-        console.log(chalk.cyan.bold('\n🔀 Checking out branch...\n'));
-        console.log(chalk.gray(`Branch: ${options.branch}`));
-        console.log(chalk.gray(`Linear API Key: ${config.linearApiKey.substring(0, 5)}***`));
-        console.log(chalk.gray(`OpenAI Key: ${config.openaiKey.substring(0, 5)}***\n`));
+        const client = new LinearClient({
+          apiKey: config.linearApiKey,
+        });
 
-        // TODO: Add your checkout logic here
-        console.log(chalk.green(`✓ Successfully checked out branch: ${options.branch}\n`));
+        const userContext = await getCurrentUserContext(client);
+
+        const branchNameProcessed = await processBranchName(options.branch, config.openaiKey);
+
+        const issuePayload: IssuePayload = await client.createIssue({
+          title: branchNameProcessed.title,
+          description: branchNameProcessed.description,
+          teamId: userContext.teamId,
+          assigneeId: userContext.id,
+          labelIds: [branchNameProcessed.issueType],
+        });
+
+        const issue = await issuePayload.issue;
+
+        if (!issue) {
+          console.error(chalk.red('Error: Failed to create ticket'));
+          return;
+        }
+
+        const issueId = issue.id;
+        const issueTitle = issue.title;
+        const gitBranchName = generateBranchName(userContext.displayName, issueId, issueTitle);
+
+        console.log(chalk.green(`✓ Successfully created ticket: ${issue.title}`));
+        console.log(chalk.green(`✓ Successfully created ticket: ${issue.description}`));
+        console.log(chalk.cyan(`\n🌳 Git branch name: ${gitBranchName}`));
+
+        // Attempt to create and checkout the git branch
+        try {
+          console.log(chalk.blue('\n📦 Creating and checking out git branch...\n'));
+          createAndCheckoutBranch(gitBranchName);
+          console.log(chalk.green(`\n✓ Successfully checked out branch: ${gitBranchName}\n`));
+        } catch (gitError) {
+          if (gitError instanceof GitError) {
+            console.error(chalk.red(`\n✗ Git Error: ${gitError.message}\n`));
+          } else {
+            throw gitError;
+          }
+        }
       } catch (error) {
         console.error(chalk.red('Error during checkout:'), error);
         process.exit(1);
       }
     });
+}
+
+// Goal is to use branch name to generate a ticket title and description
+// Send whatever is in the branch name to the LLM to generate a ticket title and description
+
+enum IssueType {
+  Feature = 'Feature',
+  Bug = 'Bug',
+  improvement = 'improvement',
+}
+interface BranchNameProcessed {
+  title: string;
+  description: string;
+  issueType: IssueType;
+}
+
+async function processBranchName(
+  branchName: string,
+  openaiKey: string
+): Promise<BranchNameProcessed> {
+  const openai = new OpenAI({ apiKey: openaiKey });
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      {
+        role: 'user',
+        content: `You are a helpful assistant that processes branch names and generates a ticket title, description, and issue type.
+            The branch name is: ${branchName}
+            Generate a JSON response with the following structure:
+            {
+              "title": "short title",
+              "description": "detailed description",
+              "issueType": "Feature" | "Bug" | "improvement"
+            }
+            Respond ONLY with valid JSON, no markdown formatting.`,
+      },
+    ],
+  });
+
+  const content = response.choices[0].message.content || '{}';
+
+  try {
+    const parsed = JSON.parse(content);
+    return {
+      title: parsed.title || branchName,
+      description: parsed.description || '',
+      issueType: parsed.issueType || IssueType.Feature,
+    };
+  } catch (error) {
+    console.error(chalk.red('Error: Failed to parse OpenAI response, using defaults'));
+    process.exit(1);
+  }
 }

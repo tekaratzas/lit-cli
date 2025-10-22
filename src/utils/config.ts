@@ -13,7 +13,7 @@ export function loadConfig(): Config {
 
   // Check for environment variables first
   let linearApiKey = process.env.LINEAR_API_KEY;
-  let openaiKey = process.env.OPENAI_KEY;
+  let openaiKey = process.env.OPENAI_API_KEY;
 
   // Prompt for missing values
   if (!linearApiKey) {
