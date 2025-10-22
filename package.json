@@ -1,0 +1,28 @@
+{
+  "name": "lit-cli",
+  "version": "1.0.0",
+  "description": "CLI tool for Linear and OpenAI integration",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "lit": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "install-global": "npm run build && npm link"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/prompt-sync": "^4.2.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  }
+}
