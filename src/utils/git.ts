@@ -59,11 +59,7 @@ export function branchExists(branchName: string): boolean {
   }
 }
 
-/**
- * Creates and checks out a new git branch
- * Handles validation and error reporting
- */
-export function createAndCheckoutBranch(branchName: string): void {
+export function checkForSafeGitStatus(): boolean {
   // Check if git is installed
   if (!isGitInstalled()) {
     throw new GitError(
@@ -84,6 +80,15 @@ export function createAndCheckoutBranch(branchName: string): void {
       'You have unstaged changes. Please commit or stash them before creating a new branch.'
     );
   }
+  return true;
+}
+
+/**
+ * Creates and checks out a new git branch
+ * Handles validation and error reporting
+ */
+export function createAndCheckoutBranch(branchName: string): void {
+  checkForSafeGitStatus();
 
   // Check if branch already exists
   if (branchExists(branchName)) {

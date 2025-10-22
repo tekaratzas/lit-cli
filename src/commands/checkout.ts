@@ -5,7 +5,7 @@ import { Command } from 'commander';
 import type { Config } from '../utils/config.js';
 import getCurrentUserContext from '../utils/LinearUserContext.js';
 import { generateBranchName } from '../utils/branchName.js';
-import { createAndCheckoutBranch, GitError } from '../utils/git.js';
+import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git.js';
 
 export function checkoutCommand(program: Command, config: Config) {
   program
@@ -20,6 +20,11 @@ export function checkoutCommand(program: Command, config: Config) {
         process.exit(1);
       }
 
+      if (!checkForSafeGitStatus()) {
+        console.error(chalk.red('Error: Git is not installed or not found in PATH. Please install Git to continue.'));
+        return;
+      }
+
       try {
         const client = new LinearClient({
           apiKey: config.linearApiKey,
@@ -29,12 +34,19 @@ export function checkoutCommand(program: Command, config: Config) {
 
         const branchNameProcessed = await processBranchName(options.branch, config.openaiKey);
 
+        console.log(chalk.green(`✓ Title: ${branchNameProcessed.title}`));
+        console.log(chalk.green(`✓ Description: ${branchNameProcessed.description}`));
+        console.log(chalk.green(`✓ Issue Type: ${branchNameProcessed.issueType}`));
+        console.log(chalk.green(`✓ Team ID: ${userContext.teamId}`));
+        console.log(chalk.green(`✓ Assignee ID: ${userContext.id}`));
+        console.log(chalk.green(`✓ Label IDs: ${userContext.labels[branchNameProcessed.issueType]}`));
+
         const issuePayload: IssuePayload = await client.createIssue({
           title: branchNameProcessed.title,
           description: branchNameProcessed.description,
           teamId: userContext.teamId,
           assigneeId: userContext.id,
-          labelIds: [branchNameProcessed.issueType],
+          labelIds: [userContext.labels[branchNameProcessed.issueType]],
         });
 
         const issue = await issuePayload.issue;
@@ -46,7 +58,7 @@ export function checkoutCommand(program: Command, config: Config) {
 
         const issueId = issue.id;
         const issueTitle = issue.title;
-        const gitBranchName = generateBranchName(userContext.displayName, issueId, issueTitle);
+        const gitBranchName = generateBranchName(userContext.displayName, issueId, userContext.organizationSlug, issueTitle);
 
         console.log(chalk.green(`✓ Successfully created ticket: ${issue.title}`));
         console.log(chalk.green(`✓ Successfully created ticket: ${issue.description}`));
