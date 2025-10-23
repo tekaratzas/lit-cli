@@ -1,5 +1,4 @@
 import { execSync } from 'child_process';
-import chalk from 'chalk';
 
 export class GitError extends Error {
   constructor(message: string) {

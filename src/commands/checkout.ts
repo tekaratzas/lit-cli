@@ -2,10 +2,10 @@ import { IssuePayload, LinearClient } from '@linear/sdk';
 import OpenAI from 'openai';
 import chalk from 'chalk';
 import { Command } from 'commander';
-import type { Config } from '../utils/config.js';
-import getCurrentUserContext from '../utils/LinearUserContext.js';
-import { generateBranchName } from '../utils/branchName.js';
-import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git.js';
+import type { Config } from '../utils/config';
+import getCurrentUserContext from '../utils/LinearUserContext';
+import { generateBranchName } from '../utils/branchName';
+import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git';
 
 export function checkoutCommand(program: Command, config: Config) {
   program

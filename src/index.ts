@@ -2,9 +2,9 @@
 
 import chalk from 'chalk';
 import { Command } from 'commander';
-import { loadConfig } from './utils/config.js';
-import { checkoutCommand } from './commands/checkout.js';
-import { switchCommand } from './commands/switch.js';
+import { loadConfig } from './utils/config';
+import { checkoutCommand } from './commands/checkout';
+import { switchCommand } from './commands/switch';
 
 async function main() {
   try {
