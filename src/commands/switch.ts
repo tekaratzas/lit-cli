@@ -20,11 +20,12 @@ export function switchCommand(program: Command, config: Config) {
     program
         .command('switch')
         .alias('sw')
+        .option('-d, --issueDescription <issueDescription>', 'Issue description')
         .description('')
         .action(async (options) => {
-            if (!options.issueDescriton) {
-                console.error(chalk.red('Error: Branch name is required'));
-                console.log(chalk.yellow('Usage: lit checkout -b <branch-name>'));
+            if (!options.issueDescription) {
+                console.error(chalk.red('Error: Issue description is required'));
+                console.log(chalk.yellow('Usage: lit switch -d <issue-description>'));
                 process.exit(1);
             }
 
