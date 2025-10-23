@@ -91,7 +91,14 @@ export function createAndCheckoutBranch(branchName: string): void {
 
   // Check if branch already exists
   if (branchExists(branchName)) {
-    throw new GitError(`Branch "${branchName}" already exists.`);
+    // Switch to the existing branch
+    try {
+      execSync(`git checkout ${branchName}`, { stdio: 'inherit' });
+      console.log(`Switched to existing branch "${branchName}"`);
+      return;
+    } catch (error) {
+      throw new GitError(`Failed to switch to branch "${branchName}": ${error}`);
+    }
   }
 
   // Create and checkout the branch
