@@ -9,8 +9,6 @@ export interface Config {
 }
 
 export function loadConfig(): Config {
-  console.log(chalk.blue.bold('\n🔧 CLI Configuration\n'));
-
   // Check for environment variables first
   let linearApiKey = process.env.LINEAR_API_KEY;
   let openaiKey = process.env.OPENAI_API_KEY;
@@ -31,8 +29,6 @@ export function loadConfig(): Config {
       process.exit(1);
     }
   }
-
-  console.log(chalk.green('✓ Configuration loaded successfully\n'));
 
   return {
     linearApiKey,

@@ -49,9 +49,9 @@ export function checkoutCommand(program: Command, config: Config) {
           return;
         }
 
-        const issueId = issue.id;
         const issueTitle = issue.title;
-        const gitBranchName = generateBranchName(userContext.displayName, issueId, userContext.organizationSlug, issueTitle);
+        const issueIdentifier = issue.identifier;
+        const gitBranchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
 
         console.log(chalk.green(`✓ Successfully created ticket: ${issue.identifier} - ${issue.title}`));
 

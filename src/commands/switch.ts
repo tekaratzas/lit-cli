@@ -49,7 +49,7 @@ export function switchCommand(program: Command, config: Config) {
             }
 
             // get branch name from issue
-            const branchName = generateBranchName(userContext.displayName, issue.identifier, userContext.organizationSlug, issue.title);
+            const branchName = generateBranchName(userContext.displayName, issue.identifier, issue.title);
 
             // checkout branch
             createAndCheckoutBranch(branchName);

@@ -5,8 +5,7 @@
  */
 export function generateBranchName(
   username: string,
-  issueId: string,
-  organizationSlug: string,
+  issueIdentifier: string,
   issueTitle: string
 ): string {
   // Slugify the title: lowercase, replace spaces/special chars with hyphens
@@ -18,5 +17,5 @@ export function generateBranchName(
     .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
     .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 
-  return `${username.toLowerCase()}/${organizationSlug}-${issueId}-${slugifiedTitle}`;
+  return `${username.toLowerCase()}/${issueIdentifier}-${slugifiedTitle}`;
 }

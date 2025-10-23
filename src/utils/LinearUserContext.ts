@@ -15,16 +15,12 @@ async function getCurrentUserContext(client: LinearClient): Promise<UserContext>
     const organization = await client.organization;
     const teams = await viewer.teams();
 
-    console.log(organization);
-
     const labels = await organization.labels();
 
     const labeled = labels.nodes.reduce((acc, label) => {
         acc[label.name] = label.id;
         return acc;
     }, {} as Record<string, string>)
-
-    console.log(labeled);
 
     return {
         id: viewer.id,
