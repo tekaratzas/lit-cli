@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import { loadConfig } from './utils/config.js';
 import { checkoutCommand } from './commands/checkout.js';
+import { switchCommand } from './commands/switch.js';
 
 async function main() {
   try {
@@ -11,7 +12,7 @@ async function main() {
 
     program
       .name('lit')
-      .description('Linear + OpenAI CLI Tool')
+      .description('Linear + Git in one CLI')
       .version('1.0.0');
 
     // Load configuration
@@ -19,6 +20,7 @@ async function main() {
 
     // Register commands
     checkoutCommand(program, config);
+    switchCommand(program, config);
 
     // Parse arguments
     await program.parseAsync(process.argv);

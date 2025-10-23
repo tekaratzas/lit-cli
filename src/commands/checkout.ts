@@ -34,13 +34,6 @@ export function checkoutCommand(program: Command, config: Config) {
 
         const branchNameProcessed = await processBranchName(options.branch, config.openaiKey);
 
-        console.log(chalk.green(`✓ Title: ${branchNameProcessed.title}`));
-        console.log(chalk.green(`✓ Description: ${branchNameProcessed.description}`));
-        console.log(chalk.green(`✓ Issue Type: ${branchNameProcessed.issueType}`));
-        console.log(chalk.green(`✓ Team ID: ${userContext.teamId}`));
-        console.log(chalk.green(`✓ Assignee ID: ${userContext.id}`));
-        console.log(chalk.green(`✓ Label IDs: ${userContext.labels[branchNameProcessed.issueType]}`));
-
         const issuePayload: IssuePayload = await client.createIssue({
           title: branchNameProcessed.title,
           description: branchNameProcessed.description,
@@ -60,15 +53,11 @@ export function checkoutCommand(program: Command, config: Config) {
         const issueTitle = issue.title;
         const gitBranchName = generateBranchName(userContext.displayName, issueId, userContext.organizationSlug, issueTitle);
 
-        console.log(chalk.green(`✓ Successfully created ticket: ${issue.title}`));
-        console.log(chalk.green(`✓ Successfully created ticket: ${issue.description}`));
-        console.log(chalk.cyan(`\n🌳 Git branch name: ${gitBranchName}`));
+        console.log(chalk.green(`✓ Successfully created ticket: ${issue.identifier} - ${issue.title}`));
 
         // Attempt to create and checkout the git branch
         try {
-          console.log(chalk.blue('\n📦 Creating and checking out git branch...\n'));
           createAndCheckoutBranch(gitBranchName);
-          console.log(chalk.green(`\n✓ Successfully checked out branch: ${gitBranchName}\n`));
         } catch (gitError) {
           if (gitError instanceof GitError) {
             console.error(chalk.red(`\n✗ Git Error: ${gitError.message}\n`));
@@ -109,6 +98,7 @@ async function processBranchName(
       {
         role: 'user',
         content: `You are a helpful assistant that processes branch names and generates a ticket title, description, and issue type.
+        Write it so the PM is happy!
             The branch name is: ${branchName}
             Generate a JSON response with the following structure:
             {
