@@ -10,14 +10,14 @@ Feels like you are just using git, but you are also keeping those Linear issues 
 
 In this version 0. Only two commands are supported
 
-lit checkout -b "<description of problem>"
+lit checkout -b "description of problem"
 
 - Runs description through ChatGPT 4o-mini to generate issue title, description + determine if it's a bug/Feature/Improvement.
 - Creates new Linear Issue
 - Generates the Linear automation friendly branch name (exactly how Linear does it in the UI)
-- Does git checkout -b <LinearbranchName>
+- Does git checkout -b LinearbranchName
 
-lit switch "<description of issue>"
+lit switch "description of issue"
 
 - Runs a search through Linear for issues matching the description
 - if multiple hits, will ask to disambiguate
