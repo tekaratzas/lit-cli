@@ -47,15 +47,23 @@ export function switchCommand(program: Command, config: Config) {
                 title: issue.title,
             }));
 
-            const issue = await disambiguateIssues(issueDetails);
+            console.log(issueDetails);
+
+            const issue: IssueDetails = await disambiguateIssues(issueDetails);
 
             if (!issue) {
                 console.error(chalk.red('Error: unable to find issue'));
                 process.exit(1);
             }
 
+            const issueTitle: string = issue.title;
+            const issueIdentifier: string = issue.identifier;
+
+            console.log(issueTitle);
+            console.log(issueIdentifier);
+
             // get branch name from issue
-            const branchName = generateBranchName(userContext.displayName, issue.identifier, issue.title);
+            const branchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
 
             // checkout branch
             createAndCheckoutBranch(branchName);
@@ -71,13 +79,22 @@ async function disambiguateIssues(issues: IssueDetails[]): Promise<IssueDetails>
         return issues[0];
     }
 
-    const { choice } = await inquirer.prompt<{ choice: IssueDetails }>([
+    const { choice } = await inquirer.prompt<{ choice: string }>([
         {
             type: 'list',
             name: 'choice',
             message: `Select issue:`,
-            choices: issues.map(issue => issue.identifier + ' - ' + issue.title)
+            choices: issues.map(issue => ({
+                name: `${issue.identifier} - ${issue.title}`,
+                value: issue.identifier
+            }))
         }
     ]);
-    return choice;
+    
+    const selectedIssue = issues.find(issue => issue.identifier === choice);
+    if (!selectedIssue) {
+        throw new Error(`Unable to find selected issue: ${choice}`);
+    }
+    
+    return selectedIssue;
 }
