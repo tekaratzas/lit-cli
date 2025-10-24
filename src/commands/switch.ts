@@ -47,8 +47,6 @@ export function switchCommand(program: Command, config: Config) {
                 title: issue.title,
             }));
 
-            console.log(issueDetails);
-
             const issue: IssueDetails = await disambiguateIssues(issueDetails);
 
             if (!issue) {
@@ -58,9 +56,6 @@ export function switchCommand(program: Command, config: Config) {
 
             const issueTitle: string = issue.title;
             const issueIdentifier: string = issue.identifier;
-
-            console.log(issueTitle);
-            console.log(issueIdentifier);
 
             // get branch name from issue
             const branchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
