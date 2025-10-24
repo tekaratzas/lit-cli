@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { Config } from "../utils/config";
 import chalk from "chalk";
 import { Issue, LinearClient } from "@linear/sdk";
-import getCurrentUserContext from "../utils/LinearUserContext";
+import getCurrentUserContext from "../utils/Linear";
 import inquirer from 'inquirer';
 import { generateBranchName } from "../utils/branchName";
 import { createAndCheckoutBranch } from "../utils/git";

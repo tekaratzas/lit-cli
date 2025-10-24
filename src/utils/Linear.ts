@@ -33,4 +33,9 @@ async function getCurrentUserContext(client: LinearClient): Promise<UserContext>
     };
 }
 
+async function getURLForIssue(client: LinearClient, issueIdentifier: string): Promise<string> {
+    const issue = await client.issue(issueIdentifier);
+    return issue.url;
+}
+
 export default getCurrentUserContext;

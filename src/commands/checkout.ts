@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import type { Config } from '../utils/config';
-import getCurrentUserContext from '../utils/LinearUserContext';
+import getCurrentUserContext from '../utils/Linear';
 import { generateBranchName } from '../utils/branchName';
 import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git';
 
@@ -54,6 +54,7 @@ export function checkoutCommand(program: Command, config: Config) {
         const gitBranchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
 
         console.log(chalk.green(`✓ Successfully created ticket: ${issue.identifier} - ${issue.title}`));
+        console.log(chalk.gray(`\nTicket URL: ${await getURLForIssue(client, issue.identifier)}`));
 
         // Attempt to create and checkout the git branch
         try {
@@ -125,3 +126,7 @@ async function processBranchName(
     process.exit(1);
   }
 }
+function getURLForIssue(client: LinearClient, identifier: string) {
+  throw new Error('Function not implemented.');
+}
+
