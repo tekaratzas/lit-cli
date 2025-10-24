@@ -1,7 +1,7 @@
 /**
  * Generates a git branch name from user info, issue ID, and title
  * Format: {username}/{issueId}-{slugified-title}
- * Example: thomas/ter-20-add-support-for-linear-input-output-in-automation
+ * Example: thomas/ter-20-add-support-for-linear-cli-integration
  */
 export function generateBranchName(
   username: string,

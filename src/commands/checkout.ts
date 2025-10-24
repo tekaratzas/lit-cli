@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import type { Config } from '../utils/config';
-import getCurrentUserContext from '../utils/Linear';
+import getCurrentUserContext, { getURLForIssue } from '../utils/Linear';
 import { generateBranchName } from '../utils/branchName';
 import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git';
 
@@ -126,7 +126,3 @@ async function processBranchName(
     process.exit(1);
   }
 }
-function getURLForIssue(client: LinearClient, identifier: string) {
-  throw new Error('Function not implemented.');
-}
-

@@ -13,9 +13,11 @@ interface IssueDetails {
     title: string;
 }
 
-// This will work like a search function for linear issues.
-// If we we find 1 strong match, assign the issue to the current user (if not already done so) mark as in progress. then checkout the branch (with the right name)
-// If multiple matches, will need to disambiguate first
+/**
+ * This will work like a search function for linear issues.
+ * If we we find 1 strong match, assign the issue to the current user (if not already done so) mark as in progress. then checkout the branch (with the right name)
+ * If multiple matches, will need to disambiguate first
+*/
 export function switchCommand(program: Command, config: Config) {
     program
         .command('switch')
@@ -35,6 +37,7 @@ export function switchCommand(program: Command, config: Config) {
 
             const userContext = await getCurrentUserContext(client);
 
+            // Make sure to not have done issues!
             const issues: IssueSearchPayload = await client.searchIssues(options.issueDescription, {
                 filter: { state: { name: { neq: "Done" } } }
             });
