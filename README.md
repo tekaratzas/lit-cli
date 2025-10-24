@@ -46,19 +46,15 @@ npm run install-global
 
 ### API Keys
 
-You'll need two API keys:
+You'll need just one API key:
 
 **Linear API Key:**
 1. Go to [Linear Settings > API](https://linear.app/settings/api)
 2. Create a personal API key
 3. Set environment variable: `export LINEAR_API_KEY=<your_key>`
 
-**OpenAI API Key:**
-1. Go to [OpenAI Platform > API Keys](https://platform.openai.com/api-keys)
-2. Create a new secret key
-3. Set environment variable: `export OPENAI_API_KEY=<your_key>`
 
-Alternatively, add both to a `.env` file in the project root and the CLI will load them automatically.
+Alternatively, add to a `.env` file in the project root and the CLI will load them automatically.
 
 That's it. You're ready to use `lit`!
 
