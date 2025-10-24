@@ -28,18 +28,19 @@ function mapIssueType(type: string | undefined): string {
 
 export function checkoutCommand(program: Command, config: Config) {
   program
-    .command('checkout')
+    .command('checkout <branch...>')
     .alias('co')
-    .option('-b, --branch <branch>', 'Feature branch name')
     .option('-d, --description <description>', 'Issue description')
     .option('-t, --type <type>', 'Issue type: b/bug, i/improvement, f/feature')
     .description('Create a new Linear issue and checkout a feature branch')
-    .action(async (options) => {
-      if (!options.branch) {
+    .action(async (branchParts: string[], options) => {
+      if (!branchParts || branchParts.length === 0) {
         console.error(chalk.red('Error: Branch name is required'));
-        console.log(chalk.yellow('Usage: lit checkout -b <branch-name> [-d <description>] [-t b|i|f]'));
+        console.log(chalk.yellow('Usage: lit checkout <branch-name> [-d <description>] [-t b|i|f]'));
         process.exit(1);
       }
+
+      const branch = branchParts.join(' ');
 
       if (!checkForSafeGitStatus()) {
         console.error(chalk.red('Error: Git is not installed or not found in PATH. Please install Git to continue.'));
@@ -54,7 +55,7 @@ export function checkoutCommand(program: Command, config: Config) {
         const userContext = await getCurrentUserContext(client);
 
         // Remove surrounding quotes if they were included in the argument value
-        let title = options.branch.replace(/^["']|["']$/g, '');
+        let title = branch.replace(/^["']|["']$/g, '');
         const description = options.description || '';
         const issueType = mapIssueType(options.type);
 

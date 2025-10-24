@@ -24,7 +24,7 @@ In this version 0. Only two commands are supported
 
 ### 1. A command to create a new Issue and Branch at the same time.
 
-lit checkout -b "Issue Title" -d "Description of Issue" -t f
+lit checkout "Issue Title" -d "Description of Issue" -t f
 
 - Parses arguments
 - Creates new Linear Issue
