@@ -4,6 +4,12 @@
 [![License](https://img.shields.io/github/license/tekaratzas/lit-cli)](https://github.com/tekaratzas/lit-cli/blob/main/LICENSE)
 ![GitHub Release](https://img.shields.io/github/v/release/tekaratzas/lit-cli)
 
+
+
+https://github.com/user-attachments/assets/758c9a94-2e33-4a17-8f31-f3bb512314ce
+
+
+
 Linear + Git in one CLI. Don't let Linear drift from the code.
 
 Perfect for the engineer who loves building, hates tracking.
