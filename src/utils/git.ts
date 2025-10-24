@@ -94,7 +94,6 @@ export function createAndCheckoutBranch(branchName: string): void {
     // Switch to the existing branch
     try {
       execSync(`git checkout ${branchName}`, { stdio: 'inherit' });
-      console.log(`Switched to existing branch "${branchName}"`);
       return;
     } catch (error) {
       throw new GitError(`Failed to switch to branch "${branchName}": ${error}`);

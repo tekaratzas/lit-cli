@@ -81,9 +81,7 @@ export function checkoutCommand(program: Command, config: Config) {
         console.log(chalk.green(`✓ Successfully created ticket: ${issue.identifier} - ${issue.title}`));
         
         const ticketUrl = await getURLForIssue(client, issue.identifier);
-        // Use ANSI OSC 8 escape codes for clickable links - keep separate from chalk
-        console.log(chalk.gray('\nTicket URL:'));
-        console.log(`\u001b]8;;${ticketUrl}\u001b\\${ticketUrl}\u001b]8;;\u001b\\`);
+        console.log(chalk.gray('\nTicket URL:'), `\u001b]8;;${ticketUrl}\u001b\\${ticketUrl}\u001b]8;;\u001b\\`);
 
         // Attempt to create and checkout the git branch
         try {
