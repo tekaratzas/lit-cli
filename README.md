@@ -10,6 +10,8 @@ Feels like you are just using git, but you are also keeping those Linear issues 
 
 **This CLI runs locally and is BYOK.**
 
+## Features
+
 In this version 0. Only two commands are supported
 
 ### 1. A command to create a new Issue and Branch at the same time.
