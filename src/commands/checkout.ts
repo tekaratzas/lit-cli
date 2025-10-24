@@ -1,5 +1,4 @@
 import { IssuePayload, LinearClient } from '@linear/sdk';
-import OpenAI from 'openai';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import type { Config } from '../utils/config';
@@ -7,16 +6,38 @@ import getCurrentUserContext, { getURLForIssue } from '../utils/Linear';
 import { generateBranchName } from '../utils/branchName';
 import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git';
 
+function mapIssueType(type: string | undefined): string {
+  if (!type) return 'Feature';
+
+  const typeMap: { [key: string]: string } = {
+    'b': 'Bug',
+    'bug': 'Bug',
+    'i': 'improvement',
+    'improvement': 'improvement',
+    'f': 'Feature',
+    'feature': 'Feature',
+  };
+
+  const mapped = typeMap[type.toLowerCase()];
+  if (!mapped) {
+    console.error(chalk.red('Error: Invalid issue type. Must be one of: b/bug, i/improvement, f/feature'));
+    process.exit(1);
+  }
+  return mapped;
+}
+
 export function checkoutCommand(program: Command, config: Config) {
   program
     .command('checkout')
     .alias('co')
     .option('-b, --branch <branch>', 'Feature branch name')
-    .description('Checkout a feature branch')
+    .option('-d, --description <description>', 'Issue description')
+    .option('-t, --type <type>', 'Issue type: b/bug, i/improvement, f/feature')
+    .description('Create a new Linear issue and checkout a feature branch')
     .action(async (options) => {
       if (!options.branch) {
         console.error(chalk.red('Error: Branch name is required'));
-        console.log(chalk.yellow('Usage: lit checkout -b <branch-name>'));
+        console.log(chalk.yellow('Usage: lit checkout -b <branch-name> [-d <description>] [-t b|i|f]'));
         process.exit(1);
       }
 
@@ -32,14 +53,16 @@ export function checkoutCommand(program: Command, config: Config) {
 
         const userContext = await getCurrentUserContext(client);
 
-        const branchNameProcessed = await processBranchName(options.branch, config.openaiKey);
+        const title = options.branch;
+        const description = options.description || '';
+        const issueType = mapIssueType(options.type);
 
         const issuePayload: IssuePayload = await client.createIssue({
-          title: branchNameProcessed.title,
-          description: branchNameProcessed.description,
+          title: title,
+          description: description,
           teamId: userContext.teamId,
           assigneeId: userContext.id,
-          labelIds: [userContext.labels[branchNameProcessed.issueType]],
+          labelIds: [userContext.labels[issueType]],
         });
 
         const issue = await issuePayload.issue;
@@ -77,56 +100,3 @@ export function checkoutCommand(program: Command, config: Config) {
     });
 }
 
-// Goal is to use branch name to generate a ticket title and description
-// Send whatever is in the branch name to the LLM to generate a ticket title and description
-
-enum IssueType {
-  Feature = 'Feature',
-  Bug = 'Bug',
-  improvement = 'improvement',
-}
-interface BranchNameProcessed {
-  title: string;
-  description: string;
-  issueType: IssueType;
-}
-
-async function processBranchName(
-  branchName: string,
-  openaiKey: string
-): Promise<BranchNameProcessed> {
-  const openai = new OpenAI({ apiKey: openaiKey });
-
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'user',
-        content: `You are a helpful assistant that processes branch names and generates a ticket title, description, and issue type.
-        Write it so the PM is happy!
-            The branch name is: ${branchName}
-            Generate a JSON response with the following structure:
-            {
-              "title": "short title",
-              "description": "detailed description",
-              "issueType": "Feature" | "Bug" | "improvement"
-            }
-            Respond ONLY with valid JSON, no markdown formatting.`,
-      },
-    ],
-  });
-
-  const content = response.choices[0].message.content || '{}';
-
-  try {
-    const parsed = JSON.parse(content);
-    return {
-      title: parsed.title || branchName,
-      description: parsed.description || '',
-      issueType: parsed.issueType || IssueType.Feature,
-    };
-  } catch (error) {
-    console.error(chalk.red('Error: Failed to parse OpenAI response, using defaults'));
-    process.exit(1);
-  }
-}

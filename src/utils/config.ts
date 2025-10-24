@@ -5,13 +5,11 @@ const prompt = promptSync();
 
 export interface Config {
   linearApiKey: string;
-  openaiKey: string;
 }
 
 export function loadConfig(): Config {
   // Check for environment variables first
   let linearApiKey = process.env.LINEAR_API_KEY;
-  let openaiKey = process.env.OPENAI_API_KEY;
 
   // Prompt for missing values
   if (!linearApiKey) {
@@ -22,16 +20,7 @@ export function loadConfig(): Config {
     }
   }
 
-  if (!openaiKey) {
-    openaiKey = prompt(chalk.yellow('OpenAI API Key: '));
-    if (!openaiKey) {
-      console.error(chalk.red('Error: OpenAI API Key is required'));
-      process.exit(1);
-    }
-  }
-
   return {
     linearApiKey,
-    openaiKey,
   };
 }
