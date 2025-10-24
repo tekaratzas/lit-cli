@@ -1,7 +1,7 @@
 import { Command } from "commander";
 import { Config } from "../utils/config";
 import chalk from "chalk";
-import { Issue, LinearClient } from "@linear/sdk";
+import { Issue, IssueSearchPayload, LinearClient } from "@linear/sdk";
 import getCurrentUserContext from "../utils/Linear";
 import inquirer from 'inquirer';
 import { generateBranchName } from "../utils/branchName";
@@ -35,7 +35,9 @@ export function switchCommand(program: Command, config: Config) {
 
             const userContext = await getCurrentUserContext(client);
 
-            const issues = await client.searchIssues(options.issueDescription);
+            const issues: IssueSearchPayload = await client.searchIssues(options.issueDescription, {
+                filter: { state: { name: { neq: "Done" } } }
+            });
 
             const issueDetails: IssueDetails[] = await issues.nodes.map(issue => ({
                 identifier: issue.identifier,
