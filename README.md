@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/tekaratzas/lit-cli)](https://github.com/tekaratzas/lit-cli/blob/main/LICENSE)
 ![GitHub Release](https://img.shields.io/github/v/release/tekaratzas/lit-cli)
 
-Linear + Git in one CLI. 
+Linear + Git in one CLI. Don't let Linear drift from the code.
 
 Feels like you are just using git, but you are also keeping those Linear issues nice and tidy!
 
@@ -30,18 +30,29 @@ lit switch "description of issue"
 
 ## Getting Started
 
-After you cloned the repo, you will need to build + link. I added little helper to make this easier.
+### Install
+
+After cloning the repo, build and link with:
 
 ```
 npm run install-global
 ```
 
-Next, you need both your personal Linear API Key + an OpenAI API Key. Once you have them, simple exports will do the trick.
+### API Keys
 
-```
-export LINEAR_API_KEY=<linear api key>
-export OPENAI_API_KEY=<openAI api key>
-```
+You'll need two API keys:
 
-Now you should be able to run lit!
+**Linear API Key:**
+1. Go to [Linear Settings > API](https://linear.app/settings/api)
+2. Create a personal API key
+3. Set environment variable: `export LINEAR_API_KEY=<your_key>`
+
+**OpenAI API Key:**
+1. Go to [OpenAI Platform > API Keys](https://platform.openai.com/api-keys)
+2. Create a new secret key
+3. Set environment variable: `export OPENAI_API_KEY=<your_key>`
+
+Alternatively, add both to a `.env` file in the project root and the CLI will load them automatically.
+
+That's it. You're ready to use `lit`!
 
