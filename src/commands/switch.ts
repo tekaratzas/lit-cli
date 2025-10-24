@@ -20,16 +20,17 @@ interface IssueDetails {
 */
 export function switchCommand(program: Command, config: Config) {
     program
-        .command('switch')
+        .command('switch <issueDescription...>')
         .alias('sw')
-        .option('-d, --issueDescription <issueDescription>', 'Issue description')
         .description('')
-        .action(async (options) => {
-            if (!options.issueDescription) {
+        .action(async (descriptionParts: string[]) => {
+            if (!descriptionParts || descriptionParts.length === 0) {
                 console.error(chalk.red('Error: Issue description is required'));
-                console.log(chalk.yellow('Usage: lit switch -d <issue-description>'));
+                console.log(chalk.yellow('Usage: lit switch <issue-description>'));
                 process.exit(1);
             }
+
+            const issueDescription = descriptionParts.join(' ');
 
             const client = new LinearClient({
                 apiKey: config.linearApiKey,
@@ -38,7 +39,7 @@ export function switchCommand(program: Command, config: Config) {
             const userContext = await getCurrentUserContext(client);
 
             // Make sure to not have done issues!
-            const issues: IssueSearchPayload = await client.searchIssues(options.issueDescription, {
+            const issues: IssueSearchPayload = await client.searchIssues(issueDescription, {
                 filter: { state: { name: { neq: "Done" } } }
             });
 

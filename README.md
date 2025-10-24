@@ -20,7 +20,7 @@ Feels like you are just using git, but you are also keeping those Linear issues 
 
 ## Features
 
-In this version 0. Only two commands are supported
+In this version 0, only two commands are supported
 
 ### 1. A command to create a new Issue and Branch at the same time.
 
@@ -31,13 +31,13 @@ lit checkout "Issue Title" -d "Description of Issue" -t f
 - Generates the Linear automation friendly branch name (exactly how Linear does it in the UI)
 - Does git checkout -b LinearbranchName
 
-### 2. A command to switch branches via discription of the Linear Issue.
+### 2. A command to switch branches via description of the Linear Issue.
 
 lit switch "description of issue"
 
 - Runs a search through Linear for issues matching the description
-- if multiple hits, will ask to disambiguate
-- Assigns issue to you, marks in Progress
+- If multiple hits, will ask to disambiguate
+- Assigns issue to you, marks as in progress
 - git checkout the branch name
 
 ## Getting Started
