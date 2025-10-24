@@ -49,7 +49,7 @@ npm run install-global
 You'll need just one API key:
 
 **Linear API Key:**
-1. Go to [Linear Settings > API](https://linear.app/settings/api)
+1. Go to [Linear Settings > Security/Access](https://linear.app/settings/account/security)
 2. Create a personal API key
 3. Set environment variable: `export LINEAR_API_KEY=<your_key>`
 
