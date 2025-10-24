@@ -53,7 +53,8 @@ export function checkoutCommand(program: Command, config: Config) {
 
         const userContext = await getCurrentUserContext(client);
 
-        const title = options.branch;
+        // Remove surrounding quotes if they were included in the argument value
+        let title = options.branch.replace(/^["']|["']$/g, '');
         const description = options.description || '';
         const issueType = mapIssueType(options.type);
 
