@@ -5,10 +5,10 @@
 ![GitHub Release](https://img.shields.io/github/v/release/tekaratzas/lit-cli)
 
 
-## lit checkout - Create ticket and branch in one command
+## lit checkout - Create Linear Issue and Git branch in one command
 https://github.com/user-attachments/assets/b9a06026-d41b-4f9b-8e51-0748bf473e17
 
-## lit switch - search + switch to ticket branch in one command
+## lit switch - Search Linear Issues + switch to correct branch in one command
 https://github.com/user-attachments/assets/cc6cdcde-41a4-4e27-bd6a-09a4cb54458c
 
 Linear + Git in one CLI. Don't let Linear drift from the code.
