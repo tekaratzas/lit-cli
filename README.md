@@ -5,10 +5,10 @@
 ![GitHub Release](https://img.shields.io/github/v/release/tekaratzas/lit-cli)
 
 
-## lit checkout - Create Linear Issue and Git branch in one command
+## Lit Checkout - Create Linear Issue and Git branch in one command
 https://github.com/user-attachments/assets/daab979e-1066-4249-8ba8-4ae9645d62d5
 
-## lit switch - Search Linear Issues + switch to correct branch in one command
+## Lit Switch - Search Linear Issues + switch to correct branch in one command
 https://github.com/user-attachments/assets/cc6cdcde-41a4-4e27-bd6a-09a4cb54458c
 
 Linear + Git in one CLI. Don't let Linear drift from the code.
@@ -25,7 +25,9 @@ In this version 0, only two commands are supported
 
 ### 1. A command to create a new Issue and Branch at the same time.
 
+```bash
 lit checkout "Issue Title" -d "Description of Issue" -t f
+```
 
 - Parses arguments
 - Creates new Linear Issue
@@ -34,7 +36,9 @@ lit checkout "Issue Title" -d "Description of Issue" -t f
 
 ### 2. A command to switch branches via description of the Linear Issue.
 
+```bash
 lit switch "description of issue"
+```
 
 - Runs a search through Linear for issues matching the description
 - If multiple hits, will ask to disambiguate
