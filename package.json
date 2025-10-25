@@ -19,6 +19,7 @@
     "commander": "^11.1.0",
     "inquirer": "^12.10.0",
     "openai": "^6.6.0",
+    "ora": "^8.0.1",
     "prompt-sync": "^4.2.0"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import { IssuePayload, LinearClient } from '@linear/sdk';
 import chalk from 'chalk';
 import { Command } from 'commander';
+import ora from 'ora';
 import type { Config } from '../utils/config';
 import getCurrentUserContext, { getURLForIssue } from '../utils/Linear';
 import { generateBranchName } from '../utils/branchName';
@@ -59,39 +60,47 @@ export function checkoutCommand(program: Command, config: Config) {
         const description = options.description || '';
         const issueType = mapIssueType(options.type);
 
-        const issuePayload: IssuePayload = await client.createIssue({
-          title: title,
-          description: description,
-          teamId: userContext.teamId,
-          assigneeId: userContext.id,
-          labelIds: [userContext.labels[issueType]],
-        });
+        const createSpinner = ora('Creating Linear issue...').start();
 
-        const issue = await issuePayload.issue;
-
-        if (!issue) {
-          console.error(chalk.red('Error: Failed to create ticket'));
-          return;
-        }
-
-        const issueTitle = issue.title;
-        const issueIdentifier = issue.identifier;
-        const gitBranchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
-
-        console.log(chalk.green(`✓ Successfully created ticket: ${issue.identifier} - ${issue.title}`));
-        
-        const ticketUrl = await getURLForIssue(client, issue.identifier);
-        console.log(chalk.gray('\nTicket URL:'), `\u001b]8;;${ticketUrl}\u001b\\${ticketUrl}\u001b]8;;\u001b\\`);
-
-        // Attempt to create and checkout the git branch
         try {
-          createAndCheckoutBranch(gitBranchName);
-        } catch (gitError) {
-          if (gitError instanceof GitError) {
-            console.error(chalk.red(`\n✗ Git Error: ${gitError.message}\n`));
-          } else {
-            throw gitError;
+          const issuePayload: IssuePayload = await client.createIssue({
+            title: title,
+            description: description,
+            teamId: userContext.teamId,
+            assigneeId: userContext.id,
+            labelIds: [userContext.labels[issueType]],
+          });
+
+          const issue = await issuePayload.issue;
+          createSpinner.succeed('Issue created successfully');
+
+          if (!issue) {
+            console.error(chalk.red('Error: Failed to create ticket'));
+            return;
           }
+
+          const issueTitle = issue.title;
+          const issueIdentifier = issue.identifier;
+          const gitBranchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
+
+          console.log(chalk.green(`✓ Successfully created ticket: ${issue.identifier} - ${issue.title}`));
+
+          const ticketUrl = await getURLForIssue(client, issue.identifier);
+          console.log(chalk.gray('\nTicket URL:'), `\u001b]8;;${ticketUrl}\u001b\\${ticketUrl}\u001b]8;;\u001b\\`);
+
+          // Attempt to create and checkout the git branch
+          try {
+            createAndCheckoutBranch(gitBranchName);
+          } catch (gitError) {
+            if (gitError instanceof GitError) {
+              console.error(chalk.red(`\n✗ Git Error: ${gitError.message}\n`));
+            } else {
+              throw gitError;
+            }
+          }
+        } catch (createError) {
+          createSpinner.fail('Failed to create issue');
+          throw createError;
         }
       } catch (error) {
         console.error(chalk.red('Error during checkout:'), error);

@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { Config } from "../utils/config";
 import chalk from "chalk";
 import { Issue, IssueSearchPayload, LinearClient } from "@linear/sdk";
+import ora from "ora";
 import getCurrentUserContext from "../utils/Linear";
 import inquirer from 'inquirer';
 import { generateBranchName } from "../utils/branchName";
@@ -39,30 +40,40 @@ export function switchCommand(program: Command, config: Config) {
             const userContext = await getCurrentUserContext(client);
 
             // Make sure to not have done issues!
-            const issues: IssueSearchPayload = await client.searchIssues(issueDescription, {
-                filter: { state: { name: { neq: "Done" } } }
-            });
+            const searchSpinner = ora(`Searching for issues matching "${issueDescription}"...`).start();
 
-            const issueDetails: IssueDetails[] = await issues.nodes.map(issue => ({
-                identifier: issue.identifier,
-                title: issue.title,
-            }));
+            try {
+                const issues: IssueSearchPayload = await client.searchIssues(issueDescription, {
+                    filter: { state: { name: { neq: "Done" } } }
+                });
 
-            const issue: IssueDetails = await disambiguateIssues(issueDetails);
+                const issueDetails: IssueDetails[] = await issues.nodes.map(issue => ({
+                    identifier: issue.identifier,
+                    title: issue.title,
+                }));
 
-            if (!issue) {
-                console.error(chalk.red('Error: unable to find issue'));
+                searchSpinner.succeed(`Found ${issueDetails.length} matching issue(s)`);
+
+                const issue: IssueDetails = await disambiguateIssues(issueDetails);
+
+                if (!issue) {
+                    console.error(chalk.red('Error: unable to find issue'));
+                    process.exit(1);
+                }
+
+                const issueTitle: string = issue.title;
+                const issueIdentifier: string = issue.identifier;
+
+                // get branch name from issue
+                const branchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
+
+                // checkout branch
+                createAndCheckoutBranch(branchName);
+            } catch (searchError) {
+                searchSpinner.fail('Failed to search for issues');
+                console.error(chalk.red('Error during switch:'), searchError);
                 process.exit(1);
             }
-
-            const issueTitle: string = issue.title;
-            const issueIdentifier: string = issue.identifier;
-
-            // get branch name from issue
-            const branchName = generateBranchName(userContext.displayName, issueIdentifier, issueTitle);
-
-            // checkout branch
-            createAndCheckoutBranch(branchName);
         })
 }
 
