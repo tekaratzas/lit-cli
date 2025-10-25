@@ -6,7 +6,7 @@
 
 
 ## lit checkout - Create Linear Issue and Git branch in one command
-https://github.com/user-attachments/assets/b9a06026-d41b-4f9b-8e51-0748bf473e17
+https://github.com/user-attachments/assets/daab979e-1066-4249-8ba8-4ae9645d62d5
 
 ## lit switch - Search Linear Issues + switch to correct branch in one command
 https://github.com/user-attachments/assets/cc6cdcde-41a4-4e27-bd6a-09a4cb54458c
