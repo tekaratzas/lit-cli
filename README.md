@@ -1,9 +1,16 @@
-# Lit
+# Lit - Manage your Linear tickets without ever leaving your Git workflow.
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/tekaratzas/lit-cli?style=social)](https://github.com/tekaratzas/lit-cli)
 [![License](https://img.shields.io/github/license/tekaratzas/lit-cli)](https://github.com/tekaratzas/lit-cli/blob/main/LICENSE)
 ![GitHub Release](https://img.shields.io/github/v/release/tekaratzas/lit-cli)
 
+Manage Linear issues via (what looks like!) git commands.
+
+Perfect for the engineers who love building, but hate having to track everything.
+
+Feels like you are just using git, but you are also keeping those Linear issues nice and tidy!
+
+**This CLI runs 100% locally, you just provide your Linear Key via env variable**
 
 ## Lit Checkout - Create Linear Issue and Git branch in one command
 https://github.com/user-attachments/assets/daab979e-1066-4249-8ba8-4ae9645d62d5
@@ -11,25 +18,17 @@ https://github.com/user-attachments/assets/daab979e-1066-4249-8ba8-4ae9645d62d5
 ## Lit Switch - Search Linear Issues + switch to correct branch in one command
 https://github.com/user-attachments/assets/cc6cdcde-41a4-4e27-bd6a-09a4cb54458c
 
-Linear + Git in one CLI. Don't let Linear drift from the code.
-
-Perfect for the engineer who loves building, hates tracking.
-
-Feels like you are just using git, but you are also keeping those Linear issues nice and tidy!
-
-**This CLI runs locally and is BYOK.**
-
 ## Features
 
-In this version 0, only two commands are supported
+In this version 0.1, only two commands are supported
 
-### 1. A command to create a new Issue and Branch at the same time.
+### 1. A command to create a new Issue and branch at the same time.
 
 ```bash
 lit checkout "Issue Title" -d "Description of Issue" -t f
 ```
 
-- Parses arguments
+- Parses arguments: title, description (optional), issye type [bug, feature, improvement] (optional)
 - Creates new Linear Issue
 - Generates the Linear automation friendly branch name (exactly how Linear does it in the UI)
 - Does git checkout -b LinearbranchName
@@ -43,7 +42,7 @@ lit switch "description of issue"
 - Runs a search through Linear for issues matching the description
 - If multiple hits, will ask to disambiguate
 - Assigns issue to you, marks as in progress
-- git checkout the branch name
+- git checkout the branch name (creaets it if it doesn't exist)
 
 ## Getting Started
 
@@ -68,4 +67,3 @@ You'll need just one API key:
 Alternatively, add to a `.env` file in the project root and the CLI will load them automatically.
 
 That's it. You're ready to use `lit`!
-
