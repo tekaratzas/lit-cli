@@ -4,8 +4,6 @@
 [![License](https://img.shields.io/github/license/tekaratzas/lit-cli)](https://github.com/tekaratzas/lit-cli/blob/main/LICENSE)
 ![GitHub Release](https://img.shields.io/github/v/release/tekaratzas/lit-cli)
 
-Manage Linear issues via (what looks like!) git commands.
-
 Perfect for the engineers who love building, but hate having to track everything.
 
 Feels like you are just using git, but you are also keeping those Linear issues nice and tidy!
