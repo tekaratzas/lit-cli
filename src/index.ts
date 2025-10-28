@@ -5,6 +5,7 @@ import { Command } from 'commander';
 import { loadConfig } from './utils/config';
 import { checkoutCommand } from './commands/checkout';
 import { switchCommand } from './commands/switch';
+import { commitCommand } from './commands/commit';
 
 async function main() {
   try {
@@ -21,7 +22,7 @@ async function main() {
     // Register commands
     checkoutCommand(program, config);
     switchCommand(program, config);
-
+    commitCommand(program, config);
     // Parse arguments
     await program.parseAsync(process.argv);
   } catch (error) {

@@ -20,6 +20,18 @@ export function isGitInstalled(): boolean {
 }
 
 /**
+ * Gets the current branch name
+ */
+export function getCurrentBranch(): string {
+  try {
+    const output = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' });
+    return output.trim();
+  } catch {
+    return '';
+  }
+}
+
+/**
  * Checks if we're inside a git repository
  */
 export function isGitRepo(): boolean {

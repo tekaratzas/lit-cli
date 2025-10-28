@@ -56,4 +56,38 @@ export async function getURLForIssue(client: LinearClient, issueIdentifier: stri
     }
 }
 
+// Expected format: username/ISSUE-123-description
+// We need to extract "ISSUE-123" from the branch name
+export function getIssueIdentifierFromBranch(branch: string): string | null {
+    if (!branch || typeof branch !== 'string') {
+        return null;
+    }
+    
+    const parts = branch.split('/');
+    if (parts.length < 2) {
+        // Branch doesn't have a '/' separator
+        return null;
+    }
+    
+    const afterSlash = parts[1];
+    if (!afterSlash) {
+        return null;
+    }
+    
+    const dashParts = afterSlash.split('-');
+    if (dashParts.length < 2) {
+        // No issue identifier format found (needs at least PROJECT-NUMBER)
+        return null;
+    }
+    
+    // Return PROJECT-NUMBER (e.g., "ISSUE-123")
+    const identifier = `${dashParts[0]}-${dashParts[1]}`;
+    
+    if (!identifier || identifier === '-') {
+        return null;
+    }
+    
+    return identifier;
+}
+
 export default getCurrentUserContext;
