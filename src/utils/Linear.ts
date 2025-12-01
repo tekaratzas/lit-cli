@@ -90,4 +90,16 @@ export function getIssueIdentifierFromBranch(branch: string): string | null {
     return identifier;
 }
 
+async function getInProgressStateId(client: LinearClient): Promise<string> {
+    const ticketStates = await client.workflowStates();
+    return ticketStates.nodes.find(state => state.name === 'In Progress')?.id ?? '';
+}
+
+export async function markIssueAsInProgress(client: LinearClient, issueId: string): Promise<void> {
+    const inProgressStateId = await getInProgressStateId(client);
+    await client.updateIssue(issueId, {
+        stateId: inProgressStateId,
+    });
+}
+
 export default getCurrentUserContext;

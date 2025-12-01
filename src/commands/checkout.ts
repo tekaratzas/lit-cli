@@ -91,6 +91,10 @@ export function checkoutCommand(program: Command, config: Config) {
           // Attempt to create and checkout the git branch
           try {
             createAndCheckoutBranch(gitBranchName);
+            // mark issue as in progress
+            await client.updateIssue(issue.id, {
+              stateId: 'in_progress',
+            });
           } catch (gitError) {
             if (gitError instanceof GitError) {
               console.error(chalk.red(`\n✗ Git Error: ${gitError.message}\n`));
