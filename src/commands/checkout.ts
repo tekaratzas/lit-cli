@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import ora from 'ora';
 import type { Config } from '../utils/config';
-import getCurrentUserContext, { getURLForIssue } from '../utils/Linear';
+import getCurrentUserContext, { assignIssueToUser, getURLForIssue, markIssueAsInProgress } from '../utils/Linear';
 import { generateBranchName } from '../utils/branchName';
 import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git';
 
@@ -92,9 +92,9 @@ export function checkoutCommand(program: Command, config: Config) {
           try {
             createAndCheckoutBranch(gitBranchName);
             // mark issue as in progress
-            await client.updateIssue(issue.id, {
-              stateId: 'in_progress',
-            });
+            await markIssueAsInProgress(client, issue.id);
+            // assign issue to user
+            await assignIssueToUser(client, issue.id, userContext.id);
           } catch (gitError) {
             if (gitError instanceof GitError) {
               console.error(chalk.red(`\n✗ Git Error: ${gitError.message}\n`));

@@ -3,7 +3,7 @@ import { Config } from "../utils/config";
 import chalk from "chalk";
 import { Issue, IssueSearchPayload, LinearClient } from "@linear/sdk";
 import ora from "ora";
-import getCurrentUserContext, { markIssueAsInProgress } from "../utils/Linear";
+import getCurrentUserContext, { assignIssueToUser, markIssueAsInProgress } from "../utils/Linear";
 import inquirer from 'inquirer';
 import { generateBranchName } from "../utils/branchName";
 import { createAndCheckoutBranch } from "../utils/git";
@@ -73,6 +73,8 @@ export function switchCommand(program: Command, config: Config) {
                 createAndCheckoutBranch(branchName);
                 // mark issue as in progress
                 await markIssueAsInProgress(client, issue.id);
+                // assign issue to user
+                await assignIssueToUser(client, issue.id, userContext.id);
             } catch (searchError) {
                 searchSpinner.fail('Failed to search for issues');
                 console.error(chalk.red('Error during switch:'), searchError);

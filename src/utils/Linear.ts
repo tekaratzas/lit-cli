@@ -102,4 +102,10 @@ export async function markIssueAsInProgress(client: LinearClient, issueId: strin
     });
 }
 
+export async function assignIssueToUser(client: LinearClient, issueId: string, userId: string): Promise<void> {
+    await client.updateIssue(issueId, {
+        assigneeId: userId,
+    });
+}
+
 export default getCurrentUserContext;
