@@ -1,8 +1,9 @@
 # Lit - Manage your Linear tickets without ever leaving your Git workflow.
 
+[![npm version](https://img.shields.io/npm/v/linear-lit-cli.svg)](https://www.npmjs.com/package/linear-lit-cli)
+[![npm downloads](https://img.shields.io/npm/dm/linear-lit-cli.svg)](https://www.npmjs.com/package/linear-lit-cli)
 [![GitHub Repo stars](https://img.shields.io/github/stars/tekaratzas/lit-cli?style=social)](https://github.com/tekaratzas/lit-cli)
 [![License](https://img.shields.io/github/license/tekaratzas/lit-cli)](https://github.com/tekaratzas/lit-cli/blob/main/LICENSE)
-![GitHub Release](https://img.shields.io/github/v/release/tekaratzas/lit-cli)
 
 Perfect for the engineers who love building, but hate having to track everything.
 
@@ -55,58 +56,122 @@ lit checkout "Issue Title" -d "Description of Issue" -t f
 
 ## Getting Started
 
-### Install
+### Quick Setup (3 steps)
 
-After cloning the repo, build and link with:
+**1. Install**
+
+Install globally via npm:
 
 ```bash
+npm install -g linear-lit-cli
+```
+
+**2. Get your Linear API Key**
+
+Visit [linear.app/settings/account/security](https://linear.app/settings/account/security) and create a personal API key.
+
+**3. Configure (Recommended)**
+
+Save your API key permanently with one command:
+
+```bash
+lit config set linear-api-key <your_key>
+```
+
+Your key is stored securely at `~/.config/lit-cli/config.json` and you'll never need to set it again!
+
+Done! Now you can use `lit` from anywhere. 🎉
+
+---
+
+### Development Setup
+
+Want to contribute or run from source?
+
+```bash
+git clone https://github.com/tekaratzas/lit-cli.git
+cd lit-cli
+npm install
 npm run install-global
 ```
 
-### Configuration
+---
 
-You'll need a Linear API key to use `lit`. There are three ways to provide it:
+### Other Ways to Configure (Optional)
 
-**Option 1: Config file (Recommended)**
+Already using environment variables? No problem! While `lit config set` is the easiest method, you can also:
 
-Set your API key once and it will be saved permanently:
-
-```bash
-lit config set linear-api-key <your_key>
-```
-
-Your config is stored at `~/.config/lit-cli/config.json`
-
-**Option 2: Environment variable**
-
-Set the environment variable in your shell:
-
+**Environment Variable:**
 ```bash
 export LINEAR_API_KEY=<your_key>
 ```
+Add to `~/.zshrc` or `~/.bashrc` for persistence.
 
-Add this to your `~/.zshrc` or `~/.bashrc` to make it permanent.
+**Interactive Prompt:**  
+If no API key is found, `lit` will prompt you when you run a command (useful for quick testing).
 
-**Option 3: Interactive prompt**
+> **Note:** Priority order is: Environment variable → Config file → Interactive prompt
 
-If no API key is found, `lit` will prompt you for it when you run a command.
-
-**Getting your Linear API Key:**
-1. Go to [Linear Settings > Security/Access](https://linear.app/settings/account/security)
-2. Create a personal API key
-3. Use one of the methods above to configure it
-
-### Config Commands
+### Config Management
 
 ```bash
-# Set a config value
+# Set your API key (recommended)
 lit config set linear-api-key <your_key>
 
-# Get a config value
-lit config get linear-api-key
+# View your config (API key is masked for security)
+lit config list
 
-# List all config values
+# Get a specific value
+lit config get linear-api-key
+```
+
+Config is stored at: `~/.config/lit-cli/config.json`
+
+---
+
+## Usage
+
+Once configured, you can use these commands:
+
+```bash
+# Create a new Linear issue and checkout a branch
+lit checkout "Fix login bug" -d "Users can't login" -t bug
+
+# Switch to an existing issue's branch
+lit switch "login bug"
+
+# Commit and comment on the current issue
+lit commit "Fixed authentication logic"
+
+# Manage configuration
+lit config set linear-api-key <your_key>
 lit config list
 ```
 
-That's it. You're ready to use `lit`!
+### Command Reference
+
+**`lit checkout <title> [options]`** (alias: `co`)
+- `-d, --description <text>` - Issue description
+- `-t, --type <type>` - Issue type: `b`/`bug`, `f`/`feature`, `i`/`improvement`
+
+**`lit switch <description>` (alias: `sw`)**
+- Searches Linear for matching issues
+- Prompts to select if multiple matches found
+
+**`lit commit <message>` (alias: `cm`)**
+- Commits with message and posts comment to Linear issue
+
+**`lit config <command>`**
+- `set <key> <value>` - Set a config value
+- `get <key>` - Get a config value  
+- `list` - Show all config values
+
+---
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT License - see LICENSE file for details.

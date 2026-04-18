@@ -1,11 +1,25 @@
 {
-  "name": "lit-cli",
-  "version": "1.0.0",
-  "description": "CLI tool for Linear and OpenAI integration",
+  "name": "linear-lit-cli",
+  "version": "0.1.0",
+  "description": "CLI tool for Linear and Git integration - manage Linear tickets without leaving your git workflow",
   "main": "dist/index.js",
   "bin": {
     "lit": "./dist/index.js"
   },
+  "keywords": [
+    "linear",
+    "git",
+    "cli",
+    "workflow",
+    "issue-tracking",
+    "productivity"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tekaratzas/lit-cli.git"
+  },
+  "author": "Thomas Karatzas",
+  "license": "MIT",
   "scripts": {
     "dev": "ts-node src/index.ts",
     "build": "tsc",
