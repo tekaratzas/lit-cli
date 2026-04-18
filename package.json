@@ -1,6 +1,6 @@
 {
   "name": "linear-lit-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI tool for Linear and Git integration - manage Linear tickets without leaving your git workflow",
   "main": "dist/index.js",
   "bin": {
