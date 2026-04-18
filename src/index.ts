@@ -6,6 +6,7 @@ import { loadConfig } from './utils/config';
 import { checkoutCommand } from './commands/checkout';
 import { switchCommand } from './commands/switch';
 import { commitCommand } from './commands/commit';
+import { configCommand } from './commands/config';
 
 async function main() {
   try {
@@ -16,13 +17,15 @@ async function main() {
       .description('Linear + Git in one CLI')
       .version('1.0.0');
 
-    // Load configuration
-    const config = loadConfig();
+    // Register config command (doesn't need config loaded)
+    configCommand(program);
 
-    // Register commands
-    checkoutCommand(program, config);
-    switchCommand(program, config);
-    commitCommand(program, config);
+    // Register commands with lazy config loading
+    // Config will only be loaded when these commands are actually executed
+    checkoutCommand(program, loadConfig);
+    switchCommand(program, loadConfig);
+    commitCommand(program, loadConfig);
+    
     // Parse arguments
     await program.parseAsync(process.argv);
   } catch (error) {

@@ -20,12 +20,15 @@ interface IssueDetails {
  * If we we find 1 strong match, assign the issue to the current user (if not already done so) mark as in progress. then checkout the branch (with the right name)
  * If multiple matches, will need to disambiguate first
 */
-export function switchCommand(program: Command, config: Config) {
+export function switchCommand(program: Command, loadConfig: () => Config) {
     program
         .command('switch <issueDescription...>')
         .alias('sw')
         .description('')
         .action(async (descriptionParts: string[]) => {
+            // Load config only when command is executed
+            const config = loadConfig();
+            
             if (!descriptionParts || descriptionParts.length === 0) {
                 console.error(chalk.red('Error: Issue description is required'));
                 console.log(chalk.yellow('Usage: lit switch <issue-description>'));

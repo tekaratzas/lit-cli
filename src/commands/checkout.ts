@@ -27,7 +27,7 @@ function mapIssueType(type: string | undefined): string {
   return mapped;
 }
 
-export function checkoutCommand(program: Command, config: Config) {
+export function checkoutCommand(program: Command, loadConfig: () => Config) {
   program
     .command('checkout <branch...>')
     .alias('co')
@@ -35,6 +35,9 @@ export function checkoutCommand(program: Command, config: Config) {
     .option('-t, --type <type>', 'Issue type: b/bug, i/improvement, f/feature')
     .description('Create a new Linear issue and checkout a feature branch')
     .action(async (branchParts: string[], options) => {
+      // Load config only when command is executed
+      const config = loadConfig();
+      
       if (!branchParts || branchParts.length === 0) {
         console.error(chalk.red('Error: Branch name is required'));
         console.log(chalk.yellow('Usage: lit checkout <branch-name> [-d <description>] [-t b|i|f]'));

@@ -8,7 +8,7 @@ Perfect for the engineers who love building, but hate having to track everything
 
 Feels like you are just using git, but you are also keeping those Linear issues nice and tidy!
 
-**This CLI runs 100% locally, you just provide your Linear Key via env variable**
+**This CLI runs 100% locally. Configure your Linear API key once and you're ready to go!**
 
 ## Lit Checkout - Create Linear Issue and Git branch in one command
 https://github.com/user-attachments/assets/daab979e-1066-4249-8ba8-4ae9645d62d5
@@ -59,20 +59,54 @@ lit checkout "Issue Title" -d "Description of Issue" -t f
 
 After cloning the repo, build and link with:
 
-```
+```bash
 npm run install-global
 ```
 
-### API Keys
+### Configuration
 
-You'll need just one API key:
+You'll need a Linear API key to use `lit`. There are three ways to provide it:
 
-**Linear API Key:**
+**Option 1: Config file (Recommended)**
+
+Set your API key once and it will be saved permanently:
+
+```bash
+lit config set linear-api-key <your_key>
+```
+
+Your config is stored at `~/.config/lit-cli/config.json`
+
+**Option 2: Environment variable**
+
+Set the environment variable in your shell:
+
+```bash
+export LINEAR_API_KEY=<your_key>
+```
+
+Add this to your `~/.zshrc` or `~/.bashrc` to make it permanent.
+
+**Option 3: Interactive prompt**
+
+If no API key is found, `lit` will prompt you for it when you run a command.
+
+**Getting your Linear API Key:**
 1. Go to [Linear Settings > Security/Access](https://linear.app/settings/account/security)
 2. Create a personal API key
-3. Set environment variable: `export LINEAR_API_KEY=<your_key>`
+3. Use one of the methods above to configure it
 
+### Config Commands
 
-Alternatively, add to a `.env` file in the project root and the CLI will load them automatically.
+```bash
+# Set a config value
+lit config set linear-api-key <your_key>
+
+# Get a config value
+lit config get linear-api-key
+
+# List all config values
+lit config list
+```
 
 That's it. You're ready to use `lit`!

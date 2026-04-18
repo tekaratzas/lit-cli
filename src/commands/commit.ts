@@ -7,12 +7,15 @@ import { LinearClient } from '@linear/sdk';
 import { getIssueIdentifierFromBranch } from '../utils/Linear';
 import { getCurrentBranch } from '../utils/git';
 
-export function commitCommand(program: Command, config: Config) {
+export function commitCommand(program: Command, loadConfig: () => Config) {
     program
         .command('commit <message...>')
         .alias('cm')
         .description('Commit the current changes to the current branch and leave a comment on the Linear issue')
         .action(async (messageParts: string[]) => {
+            // Load config only when command is executed
+            const config = loadConfig();
+            
             if (!messageParts || messageParts.length === 0) {
                 console.error(chalk.red('Error: Message is required'));
                 console.log(chalk.yellow('Usage: lit commit <message>'));
