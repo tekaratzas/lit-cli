@@ -19,7 +19,7 @@ https://github.com/user-attachments/assets/cc6cdcde-41a4-4e27-bd6a-09a4cb54458c
 
 ## Features
 
-In this version 0.1, only two commands are supported
+In this version 0.1, only three commands are supported
 
 ### 1. A command to switch branches via description of the Linear Issue.
 
