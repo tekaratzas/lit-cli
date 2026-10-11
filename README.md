@@ -170,13 +170,6 @@ labels/states fail before creating or updating tickets. Without a configured tea
 teams, configure one explicitly. `commit` continues to identify its ticket from
 the current branch.
 
-To verify changes while developing (Node.js 22.19+):
-
-```bash
-npm ci
-npm test
-```
-
 ---
 
 ## Usage
