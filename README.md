@@ -127,6 +127,16 @@ lit config get linear-api-key
 
 Config is stored at: `~/.config/lit-cli/config.json`
 
+### Repository team and project
+
+Set the Linear destination once per Git repository:
+
+```bash
+lit config set team DA --local
+lit config set project "https://linear.app/your-workspace/project/your-project-0123456789ab/overview" --local
+lit config list --local
+```
+
 ---
 
 ## Usage
@@ -162,9 +172,9 @@ lit config list
 - Commits with message and posts comment to Linear issue
 
 **`lit config <command>`**
-- `set <key> <value>` - Set a config value
-- `get <key>` - Get a config value  
-- `list` - Show all config values
+- `set <key> <value> [--local]` - Set an API key, or a repository team/project with `--local`
+- `get <key> [--local]` - Get a value from the selected scope
+- `list [--local]` - Show values from the selected scope
 
 ---
 

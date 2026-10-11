@@ -1,88 +1,61 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { setConfigValue, getConfigValue } from '../utils/config';
+import { readRepositoryConfig, repositoryConfigPath, RepositoryConfig, setRepositoryConfigValue } from '../utils/repositoryConfig';
 
 export function configCommand(program: Command) {
-  const config = program
-    .command('config')
-    .description('Manage lit-cli configuration');
+  const config = program.command('config').description('Manage lit-cli configuration');
 
-  config
-    .command('set <key> <value>')
+  config.command('set <key> <value>')
     .description('Set a configuration value')
-    .action((key: string, value: string) => {
-      const validKeys = ['linear-api-key'];
-      
-      if (!validKeys.includes(key)) {
-        console.error(chalk.red(`Error: Invalid config key '${key}'`));
-        console.log(chalk.yellow(`Valid keys: ${validKeys.join(', ')}`));
-        process.exit(1);
-      }
-
-      // Map CLI keys to internal config keys
-      const keyMap: { [key: string]: 'linearApiKey' } = {
-        'linear-api-key': 'linearApiKey',
-      };
-
-      const internalKey = keyMap[key];
-      
-      try {
-        setConfigValue(internalKey, value);
+    .option('--local', 'Store team or project in the repository .lit.json')
+    .action((key: string, value: string, options: { local?: boolean }) => {
+      if (options.local) {
+        const path = setRepositoryConfigValue(localKey(key), value);
         console.log(chalk.green(`✓ Successfully set ${key}`));
-        console.log(chalk.gray(`Config stored at: ~/.config/lit-cli/config.json`));
-      } catch (error) {
-        console.error(chalk.red('Error setting config:'), error);
-        process.exit(1);
-      }
-    });
-
-  config
-    .command('get <key>')
-    .description('Get a configuration value')
-    .action((key: string) => {
-      const validKeys = ['linear-api-key'];
-      
-      if (!validKeys.includes(key)) {
-        console.error(chalk.red(`Error: Invalid config key '${key}'`));
-        console.log(chalk.yellow(`Valid keys: ${validKeys.join(', ')}`));
-        process.exit(1);
-      }
-
-      const keyMap: { [key: string]: 'linearApiKey' } = {
-        'linear-api-key': 'linearApiKey',
-      };
-
-      const internalKey = keyMap[key];
-      const value = getConfigValue(internalKey);
-
-      if (value) {
-        console.log(chalk.cyan(`${key}:`), value);
+        console.log(chalk.gray(`Config stored at: ${path}`));
       } else {
-        console.log(chalk.yellow(`${key} is not set`));
+        requireGlobalKey(key);
+        setConfigValue('linearApiKey', value);
+        console.log(chalk.green(`✓ Successfully set ${key}`));
       }
     });
 
-  config
-    .command('list')
-    .description('List all configuration values')
-    .action(() => {
-      const keys: Array<'linearApiKey'> = ['linearApiKey'];
-      const displayNames = {
-        linearApiKey: 'linear-api-key',
-      };
-
-      console.log(chalk.bold('\nConfiguration:'));
-      keys.forEach(key => {
-        const value = getConfigValue(key);
-        const displayName = displayNames[key];
-        if (value) {
-          // Mask the API key for security
-          const maskedValue = value.substring(0, 8) + '...' + value.substring(value.length - 4);
-          console.log(chalk.cyan(`  ${displayName}:`), maskedValue);
-        } else {
-          console.log(chalk.cyan(`  ${displayName}:`), chalk.gray('(not set)'));
-        }
-      });
-      console.log(chalk.gray('\nConfig file: ~/.config/lit-cli/config.json\n'));
+  config.command('get <key>')
+    .description('Get a configuration value')
+    .option('--local', 'Read repository configuration')
+    .action((key: string, options: { local?: boolean }) => {
+      const value = options.local ? readRepositoryConfig()[localKey(key)] : globalValue(key);
+      console.log(value ? `${key}: ${value}` : `${key} is not set`);
     });
+
+  config.command('list')
+    .description('List configuration values')
+    .option('--local', 'List repository configuration')
+    .action((options: { local?: boolean }) => {
+      if (options.local) {
+        const values = readRepositoryConfig();
+        for (const key of ['team', 'project'] as const) console.log(`${key}: ${values[key] ?? '(not set)'}`);
+        console.log(`Config file: ${repositoryConfigPath() ?? '(not in a Git repository)'}`);
+      } else {
+        const value = getConfigValue('linearApiKey');
+        console.log(`linear-api-key: ${value ? value.slice(0, 8) + '...' + value.slice(-4) : '(not set)'}`);
+      }
+    });
+}
+
+function localKey(key: string): keyof RepositoryConfig {
+  if (key !== 'team' && key !== 'project') {
+    throw new Error('Local configuration accepts team and project only. Store API keys without --local.');
+  }
+  return key;
+}
+
+function globalValue(key: string): string | undefined {
+  requireGlobalKey(key);
+  return getConfigValue('linearApiKey');
+}
+
+function requireGlobalKey(key: string): void {
+  if (key !== 'linear-api-key') throw new Error('Use --local to configure team or project; the user configuration accepts linear-api-key only.');
 }
