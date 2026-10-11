@@ -1,9 +1,9 @@
 import { Command } from "commander";
 import { Config } from "../utils/config";
 import chalk from "chalk";
-import { Issue, IssueSearchPayload, LinearClient } from "@linear/sdk";
+import { LinearClient } from "@linear/sdk";
 import ora from "ora";
-import getCurrentUserContext, { assignIssueToUser, markIssueAsInProgress } from "../utils/Linear";
+import { LinearWorkspace } from "../utils/Linear";
 import inquirer from 'inquirer';
 import { generateBranchName } from "../utils/branchName";
 import { createAndCheckoutBranch } from "../utils/git";
@@ -41,15 +41,14 @@ export function switchCommand(program: Command, loadConfig: () => Config) {
                 apiKey: config.linearApiKey,
             });
 
-            const userContext = await getCurrentUserContext(client);
+            const workspace = new LinearWorkspace(client, config);
+            const userContext = await workspace.context();
 
             // Make sure to not have done issues!
             const searchSpinner = ora(`Searching for issues matching "${issueDescription}"...`).start();
 
             try {
-                const issues: IssueSearchPayload = await client.searchIssues(issueDescription, {
-                    filter: { state: { name: { neq: "Done" } } }
-                });
+                const issues = await workspace.searchIssues(issueDescription);
 
                 const issueDetails: IssueDetails[] = await issues.nodes.map(issue => ({
                     identifier: issue.identifier,
@@ -74,10 +73,7 @@ export function switchCommand(program: Command, loadConfig: () => Config) {
 
                 // checkout branch
                 createAndCheckoutBranch(branchName);
-                // mark issue as in progress
-                await markIssueAsInProgress(client, issue.id);
-                // assign issue to user
-                await assignIssueToUser(client, issue.id, userContext.id);
+                await workspace.startIssue(issue.id);
             } catch (searchError) {
                 searchSpinner.fail('Failed to search for issues');
                 console.error(chalk.red('Error during switch:'), searchError);

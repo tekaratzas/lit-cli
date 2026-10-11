@@ -3,10 +3,11 @@ import { homedir } from 'os';
 import { join } from 'path';
 import promptSync from 'prompt-sync';
 import chalk from 'chalk';
+import { readRepositoryConfig, RepositoryConfig } from './repositoryConfig';
 
 const prompt = promptSync();
 
-export interface Config {
+export interface Config extends RepositoryConfig {
   linearApiKey: string;
 }
 
@@ -68,6 +69,7 @@ export function setConfigValue(key: keyof ConfigFile, value: string): void {
 
 // Load config with priority: env var > config file > prompt
 export function loadConfig(): Config {
+  const repository = readRepositoryConfig();
   // Priority 1: Check environment variables
   let linearApiKey = process.env.LINEAR_API_KEY;
 
@@ -92,5 +94,6 @@ export function loadConfig(): Config {
 
   return {
     linearApiKey,
+    ...repository,
   };
 }

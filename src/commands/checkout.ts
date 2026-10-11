@@ -1,9 +1,9 @@
-import { IssuePayload, LinearClient } from '@linear/sdk';
+import { LinearClient } from '@linear/sdk';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import ora from 'ora';
 import type { Config } from '../utils/config';
-import getCurrentUserContext, { assignIssueToUser, getURLForIssue, markIssueAsInProgress } from '../utils/Linear';
+import { LinearWorkspace } from '../utils/Linear';
 import { generateBranchName } from '../utils/branchName';
 import { createAndCheckoutBranch, GitError, checkForSafeGitStatus } from '../utils/git';
 
@@ -56,7 +56,8 @@ export function checkoutCommand(program: Command, loadConfig: () => Config) {
           apiKey: config.linearApiKey,
         });
 
-        const userContext = await getCurrentUserContext(client);
+        const workspace = new LinearWorkspace(client, config);
+        const userContext = await workspace.context();
 
         // Remove surrounding quotes if they were included in the argument value
         let title = branch.replace(/^["']|["']$/g, '');
@@ -66,15 +67,7 @@ export function checkoutCommand(program: Command, loadConfig: () => Config) {
         const createSpinner = ora('Creating Linear issue...').start();
 
         try {
-          const issuePayload: IssuePayload = await client.createIssue({
-            title: title,
-            description: description,
-            teamId: userContext.teamId,
-            assigneeId: userContext.id,
-            labelIds: [userContext.labels[issueType]],
-          });
-
-          const issue = await issuePayload.issue;
+          const issue = await workspace.createIssue(title, description, issueType);
           createSpinner.succeed('Issue created successfully');
 
           if (!issue) {
@@ -88,16 +81,13 @@ export function checkoutCommand(program: Command, loadConfig: () => Config) {
 
           console.log(chalk.green(`✓ Successfully created ticket: ${issue.identifier} - ${issue.title}`));
 
-          const ticketUrl = await getURLForIssue(client, issue.identifier);
+          const ticketUrl = issue.url;
           console.log(chalk.gray('\nTicket URL:'), `\u001b]8;;${ticketUrl}\u001b\\${ticketUrl}\u001b]8;;\u001b\\`);
 
           // Attempt to create and checkout the git branch
           try {
             createAndCheckoutBranch(gitBranchName);
-            // mark issue as in progress
-            await markIssueAsInProgress(client, issue.id);
-            // assign issue to user
-            await assignIssueToUser(client, issue.id, userContext.id);
+            await workspace.startIssue(issue.id);
           } catch (gitError) {
             if (gitError instanceof GitError) {
               console.error(chalk.red(`\n✗ Git Error: ${gitError.message}\n`));
