@@ -137,39 +137,6 @@ lit config set project "https://linear.app/your-workspace/project/your-project-0
 lit config list --local
 ```
 
-Replace `DA` and the example project URL with your team's key and project. Team UUIDs
-are also accepted; projects accept a UUID, the 12-character ID from their URL, or
-the full Linear project URL. Project names are not identifiers.
-
-These commands write `.lit.json` at the Git root, including when run from a
-subdirectory or linked worktree:
-
-```json
-{
-  "team": "DA",
-  "project": "0123456789ab"
-}
-```
-
-Commit `.lit.json` to share the destination with contributors and agents before
-running `lit checkout`, which requires a clean working tree. API keys stay in the
-existing user configuration or `LINEAR_API_KEY`; `.lit.json` accepts only `team`
-and `project`. Remove the `project` key to work across the whole team.
-
-- `checkout` creates tickets in that team and, when configured, that project.
-- `switch` searches only that team/project and excludes completed and canceled
-  tickets. It does not move existing tickets into the configured project.
-- Label names are matched case-insensitively, preferring the team's label over a
-  workspace-wide label. Labels belonging to other teams are never used.
-- Status changes use that team's `In Progress` started state, or its only started
-  state when there is no state named `In Progress`.
-
-Invalid destinations, projects outside the selected team, and missing or ambiguous
-labels/states fail before creating or updating tickets. Without a configured team,
-`checkout` and `switch` use your sole team membership; if you belong to multiple
-teams, configure one explicitly. `commit` continues to identify its ticket from
-the current branch.
-
 ---
 
 ## Usage
